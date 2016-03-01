@@ -19,3 +19,12 @@ Goals
 1. Registration with [Consul](https://www.consul.io/) and/or [Etcd](https://coreos.com/etcd/) for discovery by clients
 1. Securred communication between RiverMQ nodes with [ZeroMQ](http://zeromq.org/)
 1. Message storage and flowthrough visualization with [InfluxDB](https://influxdata.com/)
+
+
+Development
+-----------
+Tests are written with [Ginkgo](http://onsi.github.io/ginkgo/) and [Gomega](http://onsi.github.io/gomega/).  To install these tools run the following:
+```
+go get github.com/onsi/ginkgo/ginkgo
+go get github.com/onsi/gomega
+```

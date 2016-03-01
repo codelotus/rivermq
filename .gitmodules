@@ -1,0 +1,21 @@
+[submodule "vendor/github.com/gorilla/mux"]
+	path = vendor/github.com/gorilla/mux
+	url = git@github.com:gorilla/mux.git
+[submodule "vendor/github.com/influxdata/influxdb"]
+	path = vendor/github.com/influxdata/influxdb
+	url = git@github.com:influxdata/influxdb.git
+[submodule "vendor/github.com/pebbe/zmq4"]
+	path = vendor/github.com/pebbe/zmq4
+	url = git@github.com:pebbe/zmq4.git
+[submodule "vendor/github.com/hashicorp/raft"]
+	path = vendor/github.com/hashicorp/raft
+	url = git@github.com:hashicorp/raft.git
+[submodule "vendor/github.com/gorilla/context"]
+	path = vendor/github.com/gorilla/context
+	url = git@github.com:gorilla/context.git
+[submodule "vendor/github.com/onsi/ginkgo"]
+	path = vendor/github.com/onsi/ginkgo
+	url = git@github.com:onsi/ginkgo.git
+[submodule "vendor/github.com/onsi/gomega"]
+	path = vendor/github.com/onsi/gomega
+	url = git@github.com:onsi/gomega.git

@@ -1,0 +1,14 @@
+consul:
+  image: progrium/consul
+  command: -server -bootstrap -ui-dir /ui
+  ports:
+    - "8400:8400"
+    - "8500:8500"
+    - "8600:53/udp"
+
+influxdb:
+  image: nsteinmetz/influxdb-chronograf
+  ports:
+    - "8086:8086"
+    - "8083:8083"
+    - "10000:10000"
