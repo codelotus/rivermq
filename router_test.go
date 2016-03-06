@@ -13,9 +13,12 @@ import (
 var _ = Describe("RoutesAndHandlers", func() {
 
 	var validSub string
+	var responseSub string
 
 	BeforeEach(func() {
 		validSub = `{"type":"msgType","callbackUrl":"http://localhost/endpoint"}
+`
+		responseSub = `{"timestamp":"","type":"msgType","callbackUrl":"http://localhost/endpoint"}
 `
 	})
 
@@ -27,7 +30,7 @@ var _ = Describe("RoutesAndHandlers", func() {
 				req, _ := http.NewRequest("POST", "/subscriptions", buf)
 				res := httptest.NewRecorder()
 				NewRouter().ServeHTTP(res, req)
-				Expect(res.Body.String()).To(Equal(validSub),
+				Expect(res.Body.String()).To(Equal(responseSub),
 					"response[%s] does not match %s", res.Body.String(), validSub)
 			})
 

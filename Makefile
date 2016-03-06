@@ -26,3 +26,7 @@ clean:
 test:
 	go test ${SOURCEDIR}
 	go test ${SOURCEDIR}/model
+
+run:
+	go build -o ${BINARY} $(SOURCEDIR)/*.go
+	$(SOURCEDIR)/$(BINARY)

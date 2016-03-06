@@ -28,14 +28,16 @@ func init() {
 
 // Subscription provides the data required to create a Subscription for clients
 type Subscription struct {
+	Timestamp   string `json:"timestamp"`
 	Type        string `json:"type"`
 	CallbackURL string `json:"callbackUrl"`
 }
 
 // Message provides a message to be distributed by RiverMQ
 type Message struct {
-	Type string `json:"type"`
-	Body string `json:"body"`
+	Timestamp time.Time `json:"timestamp"`
+	Type      string    `json:"type"`
+	Body      string    `json:"body"`
 }
 
 // Validate performs sanity checks on a Subscription instance
@@ -49,6 +51,12 @@ func (sub *Subscription) Validate() (status bool, err error) {
 		return false, err
 	}
 	return true, nil
+}
+
+// CreateRiverMQDB does that
+func CreateRiverMQDB() (err error) {
+	_, err = QueryDB(fmt.Sprintf("CREATE DATABASE %v", dbName))
+	return err
 }
 
 // SaveSubscription does just that
@@ -73,14 +81,12 @@ func SaveSubscription(sub Subscription) (err error) {
 		return err
 	}
 
-	tags := map[string]string{"cpu": "cpu-total"}
+	tags := map[string]string{"Type": sub.Type}
 	fields := map[string]interface{}{
-		"idle":   10.1,
-		"system": 53.3,
-		"user":   46.6,
+		"CallbackURL": sub.CallbackURL,
 	}
 
-	pt, err := client.NewPoint("cpu_usage", tags, fields, time.Now())
+	pt, err := client.NewPoint("Subscription", tags, fields, time.Now())
 	if err != nil {
 		log.Fatal(err)
 		return err
@@ -95,7 +101,29 @@ func SaveSubscription(sub Subscription) (err error) {
 	return nil
 }
 
-func queryDB(c client.Client, cmd string) (res []client.Result, err error) {
+// GetAllSubscriptions does just that
+//func GetAllSubscriptions() (res []client.Result, err error) {
+func GetAllSubscriptions() (subs []Subscription, err error) {
+	res, err := QueryDB("select time, Type, CallbackURL from \"Subscription\"")
+	if err != nil {
+		return nil, err
+	}
+	//return res, err
+	return convertResultToSubscriptionSlice(res)
+}
+
+// QueryDB does that
+func QueryDB(cmd string) (res []client.Result, err error) {
+	c, err := client.NewHTTPClient(client.HTTPConfig{
+		Addr:     dbAddress,
+		Username: dbUsername,
+		Password: dbPassword,
+	})
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	defer c.Close()
 	q := client.Query{
 		Command:  cmd,
 		Database: dbName,
@@ -109,4 +137,29 @@ func queryDB(c client.Client, cmd string) (res []client.Result, err error) {
 		return res, err
 	}
 	return res, nil
+}
+
+func convertResultToSubscriptionSlice(res []client.Result) (subs []Subscription, err error) {
+	series := res[0].Series[0]
+	var result []Subscription
+	columns := series.Columns
+
+	// TODO: Figure out how to do this without a temporary map
+	for i := range series.Values {
+		values := series.Values[i]
+		m := make(map[string]interface{})
+		for x := range values {
+			m[columns[x]] = values[x]
+		}
+		sub := Subscription{
+			Type:        m["Type"].(string),
+			CallbackURL: m["CallbackURL"].(string),
+			Timestamp:   m["time"].(string),
+		}
+		result = append(result, sub)
+	}
+
+	fmt.Printf("Result: %v\n", result)
+
+	return result, nil
 }
