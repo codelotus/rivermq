@@ -66,9 +66,9 @@ var _ = Describe("Model", func() {
 					Expect(err).To(BeNil())
 				}
 
-				res, err := GetAllSubscriptions()
+				subs, err := GetAllSubscriptions()
 				Expect(err).To(BeNil())
-				Expect(len(res)).To(BeEquivalentTo(5))
+				Expect(len(subs)).To(BeEquivalentTo(5))
 				/*
 					fmt.Printf("len(res):\t%v\n", len(res))
 					fmt.Printf("len(res[0].Series):\t%v\n", len(res[0].Series))

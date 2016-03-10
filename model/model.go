@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -35,9 +36,9 @@ type Subscription struct {
 
 // Message provides a message to be distributed by RiverMQ
 type Message struct {
-	Timestamp time.Time `json:"timestamp"`
-	Type      string    `json:"type"`
-	Body      string    `json:"body"`
+	Timestamp time.Time       `json:"timestamp"`
+	Type      string          `json:"type"`
+	Body      json.RawMessage `json:"body"`
 }
 
 // Validate performs sanity checks on a Subscription instance
@@ -109,7 +110,7 @@ func GetAllSubscriptions() (subs []Subscription, err error) {
 		return nil, err
 	}
 	//return res, err
-	return convertResultToSubscriptionSlice(res)
+	return ConvertResultToSubscriptionSlice(res)
 }
 
 // QueryDB does that
@@ -139,7 +140,8 @@ func QueryDB(cmd string) (res []client.Result, err error) {
 	return res, nil
 }
 
-func convertResultToSubscriptionSlice(res []client.Result) (subs []Subscription, err error) {
+// ConvertResultToSubscriptionSlice does that
+func ConvertResultToSubscriptionSlice(res []client.Result) (subs []Subscription, err error) {
 	series := res[0].Series[0]
 	var result []Subscription
 	columns := series.Columns
@@ -158,8 +160,6 @@ func convertResultToSubscriptionSlice(res []client.Result) (subs []Subscription,
 		}
 		result = append(result, sub)
 	}
-
-	fmt.Printf("Result: %v\n", result)
 
 	return result, nil
 }
