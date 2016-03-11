@@ -3,9 +3,11 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/codelotus/rivermq/route"
 )
 
 func main() {
-	router := NewRouter()
+	router := route.NewRouter()
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

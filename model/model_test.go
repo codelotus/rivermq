@@ -51,14 +51,16 @@ var _ = Describe("Model", func() {
 	Describe("Converting a Influx Client Result to a Subscription", func() {
 		Context("Some context", func() {
 			It("should successfully convert", func() {
-				res, err := ConvertResultToSubscriptionSlice(createInfluxResult())
+				mockResult := createMockInfluxResult()
+				res, err := ConvertResultToSubscriptionSlice(mockResult)
 				Expect(err).To(BeNil())
 				Expect(res).NotTo(BeNil())
 			})
 		})
 		Measure("it should convert influxdb results efficiently", func(b Benchmarker) {
 			runtime := b.Time("runtime", func() {
-				res, err := ConvertResultToSubscriptionSlice(createInfluxResult())
+				mockResult := createMockInfluxResult()
+				res, err := ConvertResultToSubscriptionSlice(mockResult)
 				Expect(err).To(BeNil())
 				Expect(res).NotTo(BeNil())
 			})
@@ -68,7 +70,7 @@ var _ = Describe("Model", func() {
 
 })
 
-func createInfluxResult() (res []client.Result) {
+func createMockInfluxResult() (res []client.Result) {
 	var values [][]interface{}
 	values = append(values, []interface{}{"12:00:00", "messageType", "http://localhost/endpoint"})
 

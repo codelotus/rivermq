@@ -1,11 +1,11 @@
-package main_test
+package route_test
 
 import (
 	"bytes"
 	"net/http"
 	"net/http/httptest"
 
-	. "github.com/codelotus/rivermq"
+	. "github.com/codelotus/rivermq/route"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

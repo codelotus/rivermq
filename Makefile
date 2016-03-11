@@ -27,6 +27,9 @@ test:
 	go test ${SOURCEDIR}
 	go test ${SOURCEDIR}/model
 
+build:
+	go build -o ${BINARY} $(SOURCEDIR)/*.go
+
 run:
 	go build -o ${BINARY} $(SOURCEDIR)/*.go
 	$(SOURCEDIR)/$(BINARY)

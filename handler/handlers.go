@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"encoding/json"
@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/codelotus/rivermq/model"
-
 	"github.com/gorilla/mux"
 )
 

@@ -1,6 +1,10 @@
-package main
+package route
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/codelotus/rivermq/handler"
+)
 
 // Route defines the Route structure
 type Route struct {
@@ -18,24 +22,24 @@ var routes = Routes{
 		"CreateSubscriptionHandler",
 		"POST",
 		"/subscriptions",
-		CreateSubscriptionHandler,
+		handler.CreateSubscriptionHandler,
 	},
 	Route{
 		"GetSubscriptionByIDHandler",
 		"GET",
 		"/subscriptions/{subID}",
-		GetSubscriptionByIDHandler,
+		handler.GetSubscriptionByIDHandler,
 	},
 	Route{
 		"GetAllSubscriptionsHandler",
 		"GET",
 		"/subscriptions",
-		GetAllSubscriptionsHandler,
+		handler.GetAllSubscriptionsHandler,
 	},
 	Route{
 		"DeleteSubscriptionByIDHandler",
 		"DELETE",
 		"/subscriptions/{subID}",
-		DeleteSubscriptionByIDHandler,
+		handler.DeleteSubscriptionByIDHandler,
 	},
 }
