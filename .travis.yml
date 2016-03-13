@@ -10,3 +10,9 @@ git:
 before_install:
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
+
+# installing influx on travis: https://groups.google.com/forum/#!topic/travis-ci/osL8RQNBwhA
+before_script:
+  - wget http://s3.amazonaws.com/influxdb/influxdb_latest_amd64.deb
+  - sudo dpkg -i influxdb_latest_amd64.deb
+  - sudo service influxdb start

@@ -8,7 +8,7 @@ BINARY=rivermq
 VERSION=1.0.0
 BUILD_TIME=`date +%FT%T%z`
 
-.DEFAULT_GOAL := test
+.DEFAULT_GOAL := integration
 
 
 .PHONY: install
