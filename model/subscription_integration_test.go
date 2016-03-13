@@ -44,7 +44,7 @@ var _ = Describe("Model", func() {
 					Type:        randStr(10),
 					CallbackURL: "http://" + randStr(8) + "/endpoint",
 				}
-				err := SaveSubscription(sub)
+				_, err := SaveSubscription(sub)
 				Expect(err).To(BeNil())
 			})
 			Measure("it should save subscriptions efficiently", func(b Benchmarker) {
@@ -53,7 +53,7 @@ var _ = Describe("Model", func() {
 						Type:        randStr(10),
 						CallbackURL: "http://" + randStr(8) + "/endpoint",
 					}
-					err := SaveSubscription(sub)
+					_, err := SaveSubscription(sub)
 					Expect(err).To(BeNil())
 				})
 				Expect(runtime.Seconds()).To(BeNumerically("<", 1.2), "SaveSubscription() shouldn't take too long.")
@@ -69,7 +69,7 @@ var _ = Describe("Model", func() {
 						Type:        randStr(10),
 						CallbackURL: "http://" + randStr(8) + "/endpoint",
 					}
-					err := SaveSubscription(sub)
+					_, err := SaveSubscription(sub)
 					Expect(err).To(BeNil())
 				}
 
@@ -89,6 +89,13 @@ var _ = Describe("Model", func() {
 					fmt.Printf("Res Value[0][0]:\t%v\n", res[0].Series[0].Values[0][0])
 					fmt.Printf("len(Values):\t%v\n", len(res[0].Series[0].Values))
 				*/
+			})
+			It("should find a Subscription by ID", func() {
+				_, err := SaveSubscription(Subscription{
+					Type:        randStr(10),
+					CallbackURL: "http://" + randStr(8) + "/endpoint",
+				})
+				Expect(err).To(BeNil())
 			})
 		})
 	})

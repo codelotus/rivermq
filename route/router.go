@@ -7,8 +7,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// NewRouter does something
-func NewRouter() *mux.Router {
+// NewRiverMQRouter does something
+func NewRiverMQRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	for _, route := range routes {
 		var handler http.Handler

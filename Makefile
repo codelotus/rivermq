@@ -13,21 +13,22 @@ BUILD_TIME=`date +%FT%T%z`
 
 .PHONY: install
 install:
-	go install ./...
+	go install $(SOURCEDIR)/...
 
 .PHONY: clean
 clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
 
-.PHONY: test
-test:
+test: $(SOURCES)
 	go test ${SOURCEDIR}
+	go test ${SOURCEDIR}/route
 	go test ${SOURCEDIR}/model
 
 .PHONY: integration
 integration:
 	go test ${SOURCEDIR}
-	go test ${SOURCEDIR}/model -tags=integration
+	go test ${SOURCEDIR}/route -tags integration
+	go test ${SOURCEDIR}/model -tags integration
 
 
 build: $(SOURCES)

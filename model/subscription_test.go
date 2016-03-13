@@ -1,9 +1,8 @@
-package model_test
+package model
 
 import (
 	"encoding/json"
 
-	. "github.com/codelotus/rivermq/model"
 	"github.com/pborman/uuid"
 
 	client "github.com/influxdata/influxdb/client/v2"
@@ -55,7 +54,7 @@ var _ = Describe("Model", func() {
 		Context("Some context", func() {
 			It("should successfully convert", func() {
 				mockResult := createMockInfluxResult()
-				res, err := ConvertResultToSubscriptionSlice(mockResult)
+				res, err := convertResultToSubscriptionSlice(mockResult)
 				Expect(err).To(BeNil())
 				Expect(res).NotTo(BeNil())
 			})

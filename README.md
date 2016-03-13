@@ -25,8 +25,11 @@ Goals
 
 Development
 -----------
-Tests are written with [Ginkgo](http://onsi.github.io/ginkgo/) and [Gomega](http://onsi.github.io/gomega/).  To install these tools run the following:
+Clone the repo and inspect the Makefile for running tests and building.
+
+Integration tests require an instance of [InfluxDB](https://influxdata.com/) running on the localhost and bound to default ports.  For convenience, a docker-compose file is included in the root of the project which will launch an [InfluxDB](https://influxdata.com/) and [Consul](https://www.consul.io/) container.  Simply run the following to launch both containers.
+```bash
+docker-compose -f docker-compose-dev.yml up
 ```
-go get github.com/onsi/ginkgo/ginkgo
-go get github.com/onsi/gomega
-```
+
+Developed using [Atom](https://atom.io/) [configured for Go development](http://marcio.io/2015/07/supercharging-atom-editor-for-go-development).

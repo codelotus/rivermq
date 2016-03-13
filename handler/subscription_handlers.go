@@ -4,26 +4,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/codelotus/rivermq/model"
 	"github.com/gorilla/mux"
-	"github.com/pborman/uuid"
 )
 
 // CreateSubscriptionHandler does that
 func CreateSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	var sub model.Subscription
 	json.NewDecoder(r.Body).Decode(&sub)
-	sub.ID = uuid.NewUUID()
-	sub.Timestamp = time.Now().UnixNano()
-	if err := model.SaveSubscription(sub); err != nil {
-		panic(err)
-	}
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(sub); err != nil {
-		panic(err)
+	resultSub, err := model.SaveSubscription(sub)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		fmt.Fprint(w, err)
+	} else {
+		w.WriteHeader(http.StatusCreated)
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		if err := json.NewEncoder(w).Encode(resultSub); err != nil {
+			panic(err)
+		}
 	}
 }
 
