@@ -19,3 +19,6 @@
 [submodule "vendor/github.com/onsi/gomega"]
 	path = vendor/github.com/onsi/gomega
 	url = git@github.com:onsi/gomega.git
+[submodule "vendor/github.com/pborman/uuid"]
+	path = vendor/github.com/pborman/uuid
+	url = git@github.com:pborman/uuid.git

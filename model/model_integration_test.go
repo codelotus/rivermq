@@ -1,3 +1,5 @@
+// +build integration
+
 package model_test
 
 import (
@@ -9,6 +11,11 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
+
+var _ = BeforeSuite(func() {
+	err := CreateRiverMQDB()
+	Expect(err).NotTo(HaveOccurred())
+})
 
 var _ = Describe("Model", func() {
 

@@ -22,10 +22,16 @@ install:
 clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
 
-.PHONY: tests
+.PHONY: test
 test:
 	go test ${SOURCEDIR}
 	go test ${SOURCEDIR}/model
+
+.PHONY: integration
+integration:
+	go test ${SOURCEDIR}
+	go test ${SOURCEDIR}/model -tags=integration
+
 
 build:
 	go build -o ${BINARY} $(SOURCEDIR)/*.go

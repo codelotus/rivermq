@@ -9,6 +9,7 @@ import (
 	"time"
 
 	client "github.com/influxdata/influxdb/client/v2"
+	"github.com/pborman/uuid"
 )
 
 const (
@@ -29,9 +30,10 @@ func init() {
 
 // Subscription provides the data required to create a Subscription for clients
 type Subscription struct {
-	Timestamp   string `json:"timestamp"`
-	Type        string `json:"type"`
-	CallbackURL string `json:"callbackUrl"`
+	ID          uuid.UUID `json:"id"`
+	Timestamp   int64     `json:"timestamp"`
+	Type        string    `json:"type"`
+	CallbackURL string    `json:"callbackUrl"`
 }
 
 // Message provides a message to be distributed by RiverMQ
@@ -42,7 +44,7 @@ type Message struct {
 }
 
 // Validate performs sanity checks on a Subscription instance
-func (sub *Subscription) Validate() (status bool, err error) {
+func ValidateSubscription(sub Subscription) (status bool, err error) {
 	if typeLen := len(sub.Type); typeLen == 0 {
 		log.Printf("Error parsing supplied subscription Type[ %v ]\n ", sub.Type)
 		return false, fmt.Errorf("Error parsing supplied subscription Type[ %v ]\n ", sub.Type)
@@ -75,16 +77,19 @@ func SaveSubscription(sub Subscription) (err error) {
 
 	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
 		Database:  dbName,
-		Precision: "s",
+		Precision: "ns",
 	})
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
 
-	tags := map[string]string{"Type": sub.Type}
+	tags := map[string]string{
+		"Type": sub.Type,
+	}
 	fields := map[string]interface{}{
 		"CallbackURL": sub.CallbackURL,
+		"ID":          uuid.NewUUID(),
 	}
 
 	pt, err := client.NewPoint("Subscription", tags, fields, time.Now())
@@ -105,7 +110,7 @@ func SaveSubscription(sub Subscription) (err error) {
 // GetAllSubscriptions does just that
 //func GetAllSubscriptions() (res []client.Result, err error) {
 func GetAllSubscriptions() (subs []Subscription, err error) {
-	res, err := QueryDB("select time, Type, CallbackURL from \"Subscription\"")
+	res, err := QueryDB("select time, Type, CallbackURL, ID from \"Subscription\"")
 	if err != nil {
 		return nil, err
 	}
@@ -126,8 +131,9 @@ func QueryDB(cmd string) (res []client.Result, err error) {
 	}
 	defer c.Close()
 	q := client.Query{
-		Command:  cmd,
-		Database: dbName,
+		Command:   cmd,
+		Database:  dbName,
+		Precision: "ns",
 	}
 	if response, err := c.Query(q); err == nil {
 		if response.Error() != nil {
@@ -153,10 +159,13 @@ func ConvertResultToSubscriptionSlice(res []client.Result) (subs []Subscription,
 		for x := range values {
 			m[columns[x]] = values[x]
 		}
+
+		timeVal, _ := m["time"].(json.Number).Int64()
 		sub := Subscription{
 			Type:        m["Type"].(string),
 			CallbackURL: m["CallbackURL"].(string),
-			Timestamp:   m["time"].(string),
+			Timestamp:   timeVal,
+			ID:          uuid.Parse(m["ID"].(string)),
 		}
 		result = append(result, sub)
 	}
