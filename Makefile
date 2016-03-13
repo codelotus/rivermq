@@ -8,11 +8,8 @@ BINARY=rivermq
 VERSION=1.0.0
 BUILD_TIME=`date +%FT%T%z`
 
-.DEFAULT_GOAL: $(BINARY)
+.DEFAULT_GOAL := test
 
-
-$(BINARY): $(SOURCES)
-	go build -o ${BINARY} $(SOURCEDIR)/*.go
 
 .PHONY: install
 install:
@@ -33,7 +30,7 @@ integration:
 	go test ${SOURCEDIR}/model -tags=integration
 
 
-build:
+build: $(SOURCES)
 	go build -o ${BINARY} $(SOURCEDIR)/*.go
 
 run:
