@@ -4,6 +4,7 @@ package route_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 
@@ -30,6 +31,13 @@ var _ = Describe("RoutesAndHandlers", func() {
 `
 	})
 
+	AfterEach(func() {
+		_, err := QueryDB("DROP MEASUREMENT \"Subscription\"")
+		if err != nil {
+			Fail(err.Error())
+		}
+	})
+
 	Describe("RoutingSubscriptions", func() {
 		Context("Subscriptions Endpoints", func() {
 
@@ -39,27 +47,72 @@ var _ = Describe("RoutesAndHandlers", func() {
 				res := httptest.NewRecorder()
 				NewRiverMQRouter().ServeHTTP(res, req)
 				Expect(res.Code).To(Equal(http.StatusCreated))
+				var sub *Subscription
+				json.NewDecoder(res.Body).Decode(&sub)
+				Expect(sub.ID).ToNot(BeNil())
+				Expect(sub.Timestamp).ToNot(BeNil())
 			})
 
-			It("should route to GetSubscriptionByIDHandler", func() {
-				req, _ := http.NewRequest("GET", "/subscriptions/12", nil)
+			It("should route to FindAllSubscriptionsHandler", func() {
+				buf := bytes.NewBufferString(validSub)
+				req, _ := http.NewRequest("POST", "/subscriptions", buf)
 				res := httptest.NewRecorder()
 				NewRiverMQRouter().ServeHTTP(res, req)
-				Expect(res.Body.String()).To(Equal("GetSubscription: 12"))
+				Expect(res.Code).To(Equal(http.StatusCreated))
+				var sub *Subscription
+				json.NewDecoder(res.Body).Decode(&sub)
+				Expect(sub.ID).ToNot(BeNil())
+
+				req, _ = http.NewRequest("GET", "/subscriptions", nil)
+				res = httptest.NewRecorder()
+				NewRiverMQRouter().ServeHTTP(res, req)
+				var subs *[]Subscription
+				json.NewDecoder(res.Body).Decode(&subs)
+				Expect(len(*subs)).To(Equal(1))
 			})
 
-			It("should route to GetAllSubscriptionsHandler", func() {
-				req, _ := http.NewRequest("GET", "/subscriptions", nil)
+			It("should route to FindSubscriptionByIDHandler", func() {
+				buf := bytes.NewBufferString(validSub)
+				req, _ := http.NewRequest("POST", "/subscriptions", buf)
 				res := httptest.NewRecorder()
 				NewRiverMQRouter().ServeHTTP(res, req)
-				Expect(res.Body.String()).To(Equal("GetAllSubscriptions"))
+				Expect(res.Code).To(Equal(http.StatusCreated))
+				var sub *Subscription
+				json.NewDecoder(res.Body).Decode(&sub)
+				Expect(sub.ID).ToNot(BeNil())
+
+				url := "/subscriptions/" + sub.ID.String()
+				req, _ = http.NewRequest("GET", url, nil)
+				res = httptest.NewRecorder()
+				NewRiverMQRouter().ServeHTTP(res, req)
+				Expect(res.Code).To(Equal(http.StatusOK))
+				var resultSub *Subscription
+				json.NewDecoder(res.Body).Decode(&resultSub)
+				Expect(resultSub.ID).To(BeEquivalentTo(sub.ID))
+				Expect(resultSub.Timestamp).ToNot(BeNil())
+				Expect(resultSub.Type).To(BeEquivalentTo(sub.Type))
+				Expect(resultSub.CallbackURL).To(BeEquivalentTo(sub.CallbackURL))
 			})
 
 			It("should route to DeleteSubscriptionByIDHandler", func() {
-				req, _ := http.NewRequest("DELETE", "/subscriptions/99", nil)
+				buf := bytes.NewBufferString(validSub)
+				req, _ := http.NewRequest("POST", "/subscriptions", buf)
 				res := httptest.NewRecorder()
 				NewRiverMQRouter().ServeHTTP(res, req)
-				Expect(res.Body.String()).To(Equal("DeleteSubscriptionByID: 99"))
+				Expect(res.Code).To(Equal(http.StatusCreated))
+				var sub *Subscription
+				json.NewDecoder(res.Body).Decode(&sub)
+				Expect(sub.ID).ToNot(BeNil())
+
+				req, _ = http.NewRequest("DELETE", "/subscriptions/"+sub.ID.String(), nil)
+				res = httptest.NewRecorder()
+				NewRiverMQRouter().ServeHTTP(res, req)
+				Expect(res.Code).To(Equal(http.StatusOK))
+
+				req, _ = http.NewRequest("GET", "/subscriptions/"+sub.ID.String(), nil)
+				res = httptest.NewRecorder()
+				NewRiverMQRouter().ServeHTTP(res, req)
+				Expect(res.Code).To(Equal(http.StatusNotFound))
 			})
 
 		})

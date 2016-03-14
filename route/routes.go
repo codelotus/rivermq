@@ -25,16 +25,16 @@ var routes = Routes{
 		handler.CreateSubscriptionHandler,
 	},
 	Route{
-		"GetSubscriptionByIDHandler",
+		"FindSubscriptionByIDHandler",
 		"GET",
 		"/subscriptions/{subID}",
-		handler.GetSubscriptionByIDHandler,
+		handler.FindSubscriptionByIDHandler,
 	},
 	Route{
-		"GetAllSubscriptionsHandler",
+		"FindAllSubscriptionsHandler",
 		"GET",
 		"/subscriptions",
-		handler.GetAllSubscriptionsHandler,
+		handler.FindAllSubscriptionsHandler,
 	},
 	Route{
 		"DeleteSubscriptionByIDHandler",

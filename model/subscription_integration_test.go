@@ -73,7 +73,7 @@ var _ = Describe("Model", func() {
 					Expect(err).To(BeNil())
 				}
 
-				subs, err := GetAllSubscriptions()
+				subs, err := FindAllSubscriptions()
 				Expect(err).To(BeNil())
 				Expect(len(subs)).To(BeEquivalentTo(5))
 				/*
@@ -91,14 +91,40 @@ var _ = Describe("Model", func() {
 				*/
 			})
 			It("should find a Subscription by ID", func() {
-				_, err := SaveSubscription(Subscription{
+				sub, err := SaveSubscription(Subscription{
 					Type:        randStr(10),
 					CallbackURL: "http://" + randStr(8) + "/endpoint",
 				})
 				Expect(err).To(BeNil())
+
+				foundSub, err := FindSubscriptionByID(sub.ID)
+				Expect(err).To(BeNil())
+				Expect(foundSub).ToNot(BeNil())
+				Expect(foundSub.Type).To(Equal(sub.Type))
+				Expect(foundSub.ID).To(Equal(sub.ID))
+				Expect(foundSub.CallbackURL).To(Equal(sub.CallbackURL))
 			})
 		})
 	})
+
+	Describe("Deleting Subscriptions", func() {
+		Context("Some Context", func() {
+			It("should delete a Subscription", func() {
+				sub, err := SaveSubscription(Subscription{
+					Type:        randStr(10),
+					CallbackURL: "http://" + randStr(8) + "/endpoint",
+				})
+				Expect(err).To(BeNil())
+
+				resultErr := DeleteSubscriptionByID(sub.ID)
+				Expect(resultErr).To(BeNil())
+
+				_, foundErr := FindSubscriptionByID(sub.ID)
+				Expect(foundErr).ToNot(BeNil())
+			})
+		})
+	})
+
 })
 
 // http://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-golang

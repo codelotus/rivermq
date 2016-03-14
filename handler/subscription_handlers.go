@@ -7,41 +7,71 @@ import (
 
 	"github.com/codelotus/rivermq/model"
 	"github.com/gorilla/mux"
+	"github.com/pborman/uuid"
 )
 
 // CreateSubscriptionHandler does that
 func CreateSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	var sub model.Subscription
 	json.NewDecoder(r.Body).Decode(&sub)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	resultSub, err := model.SaveSubscription(sub)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		fmt.Fprint(w, err)
 	} else {
 		w.WriteHeader(http.StatusCreated)
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		if err := json.NewEncoder(w).Encode(resultSub); err != nil {
 			panic(err)
 		}
 	}
 }
 
-// GetAllSubscriptionsHandler does that
-func GetAllSubscriptionsHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "GetAllSubscriptions")
+// FindAllSubscriptionsHandler does that
+func FindAllSubscriptionsHandler(w http.ResponseWriter, r *http.Request) {
+	sub, err := model.FindAllSubscriptions()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+	}
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(sub); err != nil {
+		panic(err)
+	}
 }
 
-// GetSubscriptionByIDHandler does that
-func GetSubscriptionByIDHandler(w http.ResponseWriter, r *http.Request) {
+// FindSubscriptionByIDHandler does that
+func FindSubscriptionByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	subID := vars["subID"]
-	fmt.Fprintf(w, "GetSubscription: %s", subID)
+	sub, err := model.FindSubscriptionByID(uuid.Parse(subID))
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, err)
+	}
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(sub); err != nil {
+		panic(err)
+	}
 }
 
 // DeleteSubscriptionByIDHandler does that
 func DeleteSubscriptionByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	subID := vars["subID"]
-	fmt.Fprintf(w, "DeleteSubscriptionByID: %s", subID)
+	id := uuid.Parse(subID)
+	_, err := model.FindSubscriptionByID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+	} else {
+		deleteErr := model.DeleteSubscriptionByID(id)
+		if deleteErr != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, err)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
+	}
 }

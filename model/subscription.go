@@ -57,12 +57,13 @@ func SaveSubscription(sub Subscription) (resultSub Subscription, err error) {
 	sub.ID = uuid.NewUUID()
 	sub.Timestamp = time.Now().UnixNano()
 
+	// In influxb tags are indexed
 	tags := map[string]string{
 		"Type": sub.Type,
+		"ID":   sub.ID.String(),
 	}
 	fields := map[string]interface{}{
 		"CallbackURL": sub.CallbackURL,
-		"ID":          sub.ID,
 	}
 	tm := time.Unix(0, sub.Timestamp)
 
@@ -81,19 +82,37 @@ func SaveSubscription(sub Subscription) (resultSub Subscription, err error) {
 	return sub, nil
 }
 
-// GetSubscriptionByID does what it says
-func GetSubscriptionByID(id uuid.UUID) (sub Subscription, err error) {
-	return sub, nil
+// FindSubscriptionByID does what it says
+func FindSubscriptionByID(id uuid.UUID) (sub Subscription, err error) {
+	res, err := QueryDB("SELECT time, Type, CallbackURL, ID FROM \"Subscription\" WHERE ID = '" + id.String() + "'")
+	if err != nil {
+		return sub, err
+	}
+
+	if len(res) == 0 || len(res[0].Series) == 0 {
+		return sub, fmt.Errorf("No Series with ID[ %s ]", id.String())
+	}
+	subs, err := convertResultToSubscriptionSlice(res)
+	if err != nil {
+		return sub, err
+	}
+	return subs[0], nil
 }
 
-// GetAllSubscriptions does just that
-func GetAllSubscriptions() (subs []Subscription, err error) {
-	res, err := QueryDB("select time, Type, CallbackURL, ID from \"Subscription\"")
+// FindAllSubscriptions does just that
+func FindAllSubscriptions() (subs []Subscription, err error) {
+	res, err := QueryDB("SELECT time, Type, CallbackURL, ID FROM \"Subscription\"")
 	if err != nil {
 		return nil, err
 	}
 	//return res, err
 	return convertResultToSubscriptionSlice(res)
+}
+
+// DeleteSubscriptionByID does just that
+func DeleteSubscriptionByID(id uuid.UUID) (err error) {
+	_, err = QueryDB("DROP SERIES FROM \"Subscription\" where ID = '" + id.String() + "'")
+	return err
 }
 
 // QueryDB does that
