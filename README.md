@@ -21,6 +21,7 @@ Goals
 1. Registration with [Consul](https://www.consul.io/) and/or [Etcd](https://coreos.com/etcd/) for discovery by clients
 1. Securred communication between RiverMQ nodes with [ZeroMQ](http://zeromq.org/)
 1. Message storage and flowthrough visualization with [InfluxDB](https://influxdata.com/)
+1. Message storage and flowthrough visualization wtih [Redis](http://redis.io/), [Angular.js](https://angularjs.org/), and some charting library.
 
 
 Development
