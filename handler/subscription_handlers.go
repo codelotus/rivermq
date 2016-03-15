@@ -29,14 +29,24 @@ func CreateSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
 // FindAllSubscriptionsHandler does that
 func FindAllSubscriptionsHandler(w http.ResponseWriter, r *http.Request) {
-	sub, err := model.FindAllSubscriptions()
+	// TODO: Check for type query parameter
+	msgType := r.FormValue("type")
+	var subs []model.Subscription
+	var err error
+	if msgType != "" {
+		fmt.Printf("FormValue: %v\n", msgType)
+		subs, err = model.FindAllSubscriptionsByType(msgType)
+	} else {
+		subs, err = model.FindAllSubscriptions()
+	}
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 	}
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(sub); err != nil {
+	if err := json.NewEncoder(w).Encode(subs); err != nil {
 		panic(err)
 	}
 }

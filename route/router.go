@@ -20,7 +20,11 @@ func NewRiverMQRouter() *mux.Router {
 			Path(route.Pattern).
 			Name(route.Name).
 			Handler(handler)
-
+		if route.Queries != nil {
+			for key := range route.Queries {
+				router.Queries(key, route.Queries[key])
+			}
+		}
 	}
 	return router
 }

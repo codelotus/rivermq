@@ -88,7 +88,6 @@ func FindSubscriptionByID(id uuid.UUID) (sub Subscription, err error) {
 	if err != nil {
 		return sub, err
 	}
-
 	if len(res) == 0 || len(res[0].Series) == 0 {
 		return sub, fmt.Errorf("No Series with ID[ %s ]", id.String())
 	}
@@ -97,6 +96,22 @@ func FindSubscriptionByID(id uuid.UUID) (sub Subscription, err error) {
 		return sub, err
 	}
 	return subs[0], nil
+}
+
+// FindAllSubscriptionsByType does that
+func FindAllSubscriptionsByType(msgType string) (subs []Subscription, err error) {
+	res, err := QueryDB("select time, Type, CallbackURL, ID from \"Subscription\" where Type = '" + msgType + "'")
+	if err != nil {
+		return subs, err
+	}
+	if len(res) == 0 || len(res[0].Series) == 0 {
+		return subs, fmt.Errorf("No Series with Type[ %s ]", msgType)
+	}
+	subs, err = convertResultToSubscriptionSlice(res)
+	if err != nil {
+		return subs, err
+	}
+	return subs, nil
 }
 
 // FindAllSubscriptions does just that

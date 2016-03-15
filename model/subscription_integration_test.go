@@ -37,8 +37,8 @@ var _ = Describe("Model", func() {
 		}
 	})
 
-	Describe("Saving a Subscription", func() {
-		Context("Some Context", func() {
+	Describe("Subscription", func() {
+		Context("Saving", func() {
 			It("should save a valid Subscription", func() {
 				sub := Subscription{
 					Type:        randStr(10),
@@ -59,10 +59,8 @@ var _ = Describe("Model", func() {
 				Expect(runtime.Seconds()).To(BeNumerically("<", 1.2), "SaveSubscription() shouldn't take too long.")
 			}, 10)
 		})
-	})
 
-	Describe("Reading Subscriptions", func() {
-		Context("Some Context", func() {
+		Context("Reading", func() {
 			It("should find five subscriptions when five are saved", func() {
 				for x := 0; x < 5; x++ {
 					sub := Subscription{
@@ -90,6 +88,7 @@ var _ = Describe("Model", func() {
 					fmt.Printf("len(Values):\t%v\n", len(res[0].Series[0].Values))
 				*/
 			})
+
 			It("should find a Subscription by ID", func() {
 				sub, err := SaveSubscription(Subscription{
 					Type:        randStr(10),
@@ -104,11 +103,28 @@ var _ = Describe("Model", func() {
 				Expect(foundSub.ID).To(Equal(sub.ID))
 				Expect(foundSub.CallbackURL).To(Equal(sub.CallbackURL))
 			})
-		})
-	})
 
-	Describe("Deleting Subscriptions", func() {
-		Context("Some Context", func() {
+			It("should find Subscriptions by Type", func() {
+				for x := 0; x < 5; x++ {
+					sub := Subscription{
+						Type:        randStr(10),
+						CallbackURL: "http://" + randStr(8) + "/endpoint",
+					}
+					_, err := SaveSubscription(sub)
+					Expect(err).To(BeNil())
+				}
+				_, err := SaveSubscription(validSub)
+				Expect(err).To(BeNil())
+
+				subs, err := FindAllSubscriptionsByType(validSub.Type)
+				Expect(err).To(BeNil())
+				Expect(len(subs)).To(Equal(1))
+				Expect(subs[0].Type).To(Equal(validSub.Type))
+				Expect(subs[0].CallbackURL).To(Equal(validSub.CallbackURL))
+			})
+		})
+
+		Context("Deleting", func() {
 			It("should delete a Subscription", func() {
 				sub, err := SaveSubscription(Subscription{
 					Type:        randStr(10),

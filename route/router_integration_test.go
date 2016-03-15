@@ -25,10 +25,8 @@ var _ = Describe("RoutesAndHandlers", func() {
 	var responseSub string
 
 	BeforeEach(func() {
-		validSub = `{"type":"msgType","callbackUrl":"http://localhost/endpoint"}
-`
-		responseSub = `{"timestamp":"","type":"msgType","callbackUrl":"http://localhost/endpoint"}
-`
+		validSub = `{"type":"msgType","callbackUrl":"http://localhost/endpoint"}`
+		responseSub = `{"timestamp":"","type":"msgType","callbackUrl":"http://localhost/endpoint"}`
 	})
 
 	AfterEach(func() {
@@ -64,6 +62,30 @@ var _ = Describe("RoutesAndHandlers", func() {
 				Expect(sub.ID).ToNot(BeNil())
 
 				req, _ = http.NewRequest("GET", "/subscriptions", nil)
+				res = httptest.NewRecorder()
+				NewRiverMQRouter().ServeHTTP(res, req)
+				var subs *[]Subscription
+				json.NewDecoder(res.Body).Decode(&subs)
+				Expect(len(*subs)).To(Equal(1))
+			})
+
+			It("should route to FindAllSubscriptionsHandler and find by Subscription Type", func() {
+				buf := bytes.NewBufferString(validSub)
+				req, _ := http.NewRequest("POST", "/subscriptions", buf)
+				res := httptest.NewRecorder()
+				NewRiverMQRouter().ServeHTTP(res, req)
+				Expect(res.Code).To(Equal(http.StatusCreated))
+
+				buf = bytes.NewBufferString(`{"type":"thing","callbackUrl":"http://localhost/endpoint"}`)
+				req, _ = http.NewRequest("POST", "/subscriptions", buf)
+				res = httptest.NewRecorder()
+				NewRiverMQRouter().ServeHTTP(res, req)
+				Expect(res.Code).To(Equal(http.StatusCreated))
+				var sub *Subscription
+				json.NewDecoder(res.Body).Decode(&sub)
+				Expect(sub.ID).ToNot(BeNil())
+
+				req, _ = http.NewRequest("GET", "/subscriptions?type=thing", nil)
 				res = httptest.NewRecorder()
 				NewRiverMQRouter().ServeHTTP(res, req)
 				var subs *[]Subscription
