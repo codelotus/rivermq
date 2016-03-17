@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/codelotus/rivermq.svg?branch=master)](https://travis-ci.org/codelotus/rivermq)
+[![Build Status](https://travis-ci.org/codelotus/rivermq.svg?branch=master)](https://travis-ci.org/codelotus/rivermq) [![codecov.io](https://codecov.io/github/codelotus/rivermq/coverage.svg?branch=master)](https://codecov.io/github/codelotus/rivermq?branch=master)
 
 RiverMQ
 ========
