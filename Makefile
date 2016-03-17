@@ -18,6 +18,9 @@ install:
 .PHONY: clean
 clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
+	if [ -f coverage.txt ] ; then rm coverage.txt ; fi
+
+
 
 test: $(SOURCES)
 	go test ${SOURCEDIR}
@@ -26,10 +29,12 @@ test: $(SOURCES)
 
 .PHONY: integration
 integration:
-	go test ${SOURCEDIR}
-	go test ${SOURCEDIR}/route -tags integration
-	go test ${SOURCEDIR}/model -tags integration
-
+	go test . -coverprofile=.coverprofile -covermode=atomic
+	go test ./handler -coverprofile=./handler/.coverprofile -covermode=atomic
+	go test ./model -coverprofile=./model/.coverprofile -covermode=atomic -tags integration
+	go test ./route -coverprofile=./route/.coverprofile -covermode=atomic -tags integration
+	go test ./util -coverprofile=./util/.coverprofile -covermode=atomic
+	gover . coverage.txt
 
 build: $(SOURCES)
 	go build -o ${BINARY} $(SOURCEDIR)/*.go
