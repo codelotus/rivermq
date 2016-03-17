@@ -33,4 +33,9 @@ Integration tests require an instance of [InfluxDB](https://influxdata.com/) run
 docker-compose -f docker-compose-dev.yml up
 ```
 
+Test coverage result file concatination is done using [gover](https://github.com/modocache/gover).  This is a required dependency which must be installed using the following:
+```bash
+go get github.com/modocache/gover
+```
+
 Developed using [Atom](https://atom.io/) [configured for Go development](http://marcio.io/2015/07/supercharging-atom-editor-for-go-development).
