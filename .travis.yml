@@ -10,6 +10,7 @@ git:
 before_install:
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
+  - go get github.com/modocache/gover
 
 before_script:
   - wget https://s3.amazonaws.com/influxdb/influxdb_0.10.3-1_amd64.deb
@@ -18,4 +19,3 @@ before_script:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  
