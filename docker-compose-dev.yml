@@ -1,5 +1,6 @@
 consul:
   image: progrium/consul
+  container_name: consul
   command: -server -bootstrap -ui-dir /ui
   ports:
     - "8400:8400"
@@ -8,6 +9,7 @@ consul:
 
 influxdb:
   image: nsteinmetz/influxdb-chronograf
+  container_name: influxdb
   ports:
     - "8086:8086"
     - "8083:8083"

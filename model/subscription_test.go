@@ -11,12 +11,11 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Model", func() {
+var _ = Describe("Subscription", func() {
 
 	var (
 		validSub   Subscription
 		invalidSub Subscription
-		message    Message
 	)
 
 	BeforeEach(func() {
@@ -28,10 +27,6 @@ var _ = Describe("Model", func() {
 		invalidSub = Subscription{
 			Type:        "messageType",
 			CallbackURL: "http//localhost:1234/msg",
-		}
-
-		message = Message{
-			Type: "messageType",
 		}
 	})
 
@@ -59,17 +54,15 @@ var _ = Describe("Model", func() {
 				Expect(res).NotTo(BeNil())
 			})
 		})
-		/*
-			Measure("it should convert influxdb results efficiently", func(b Benchmarker) {
-				runtime := b.Time("runtime", func() {
-					mockResult := createMockInfluxResult()
-					res, err := ConvertResultToSubscriptionSlice(mockResult)
-					Expect(err).To(BeNil())
-					Expect(res).NotTo(BeNil())
-				})
-				Expect(runtime.Seconds()).To(BeNumerically("<", 0.1), "ConvertResultToSubscriptionSlice() is to slow")
-			}, 1000)
-		*/
+		Measure("it should convert influxdb results efficiently", func(b Benchmarker) {
+			runtime := b.Time("runtime", func() {
+				mockResult := createMockInfluxResult()
+				res, err := convertResultToSubscriptionSlice(mockResult)
+				Expect(err).To(BeNil())
+				Expect(res).NotTo(BeNil())
+			})
+			Expect(runtime.Seconds()).To(BeNumerically("<", 0.1), "ConvertResultToSubscriptionSlice() is to slow")
+		}, 1000)
 	})
 })
 

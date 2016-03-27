@@ -19,6 +19,7 @@ install:
 clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
 	if [ -f coverage.txt ] ; then rm coverage.txt ; fi
+	find ./ -name .coverprofile -print0 | xargs -0 rm
 
 
 
