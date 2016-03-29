@@ -30,8 +30,9 @@ var _ = Describe("Message", func() {
 		})
 		Context("with invalid values", func() {
 			It("should not validate", func() {
-				res, _ := ValidateMessage(invalidMsg)
+				res, err := ValidateMessage(invalidMsg)
 				Expect(res).To(BeFalse())
+				Expect(err).ToNot(BeNil())
 			})
 		})
 	})
