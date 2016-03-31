@@ -130,34 +130,6 @@ func DeleteSubscriptionByID(id uuid.UUID) (err error) {
 	return err
 }
 
-// QueryDB does that
-func QueryDB(cmd string) (res []client.Result, err error) {
-	c, err := client.NewHTTPClient(client.HTTPConfig{
-		Addr:     dbAddress,
-		Username: dbUsername,
-		Password: dbPassword,
-	})
-	if err != nil {
-		log.Fatal(err)
-		return nil, err
-	}
-	defer c.Close()
-	q := client.Query{
-		Command:   cmd,
-		Database:  dbName,
-		Precision: "ns",
-	}
-	if response, err := c.Query(q); err == nil {
-		if response.Error() != nil {
-			return res, response.Error()
-		}
-		res = response.Results
-	} else {
-		return res, err
-	}
-	return res, nil
-}
-
 // convertResultToSubscriptionSlice does that
 func convertResultToSubscriptionSlice(res []client.Result) (subs []Subscription, err error) {
 	series := res[0].Series[0]
